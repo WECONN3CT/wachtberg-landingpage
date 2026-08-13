@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rundumwachtberg Hausmeisterservice — Webseite wird bearbeitet</title>
+<meta name="description" content="Rundumwachtberg Hausmeisterservice — unsere Webseite wird gerade überarbeitet. Gartenpflege, Hausmeisterservice und Winterdienst in Wachtberg, Bonn und dem Rhein-Sieg-Kreis.">
+<meta name="robots" content="noindex, follow">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='42' fill='%230c1f15'/><circle cx='50' cy='50' r='18' fill='none' stroke='%23d3b98a' stroke-width='6'/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,500;1,600&family=Anton&family=Archivo:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-deep: #08130d;
+    --bg-green: #0d2117;
+    --bg-mid: #123024;
+    --line: #2e5c46;
+    --gold: #d3b98a;
+    --gold-dim: #a8916a;
+    --sage: #9db8a4;
+    --white: #f4f2ec;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body { height: 100%; }
+
+  body {
+    font-family: "Archivo", sans-serif;
+    background: var(--bg-deep);
+    color: var(--white);
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* ---- Layered background: deep green gradient like an evening garden ---- */
+  .bg {
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 120% 90% at 70% 10%, #1a3a2a 0%, transparent 55%),
+      radial-gradient(ellipse 100% 80% at 20% 100%, #123024 0%, transparent 60%),
+      linear-gradient(160deg, #0d2117 0%, #08130d 70%);
+    z-index: 0;
+  }
+
+  /* soft light spot, like sun through trees */
+  .bg::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle 480px at 72% 32%, rgba(211, 185, 138, 0.08), transparent 70%);
+  }
+
+  /* ---- Contour lines (topography) ---- */
+  .contours {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    opacity: 0.55;
+    animation: drift 60s linear infinite alternate;
+  }
+
+  @keyframes drift {
+    from { transform: translateY(-12px); }
+    to   { transform: translateY(12px); }
+  }
+
+  /* ---- Grain ---- */
+  .grain {
+    position: fixed;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    opacity: 0.5;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 240 240' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.05 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* ---- Layout ---- */
+  .frame {
+    position: relative;
+    z-index: 3;
+    height: 100vh;
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    padding: clamp(1.6rem, 4vw, 3.5rem) clamp(1.4rem, 6vw, 6rem);
+  }
+
+  /* ---- Wordmark ---- */
+  .brand {
+    display: inline-flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    width: max-content;
+    padding: 0.85rem 1.1rem;
+    border: 1px solid rgba(211, 185, 138, 0.35);
+    background: rgba(8, 19, 13, 0.45);
+    backdrop-filter: blur(4px);
+    animation: rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .brand strong {
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    font-size: clamp(0.8rem, 1.4vw, 1rem);
+    color: var(--white);
+  }
+
+  .brand span {
+    font-weight: 400;
+    letter-spacing: 0.42em;
+    font-size: clamp(0.52rem, 0.9vw, 0.65rem);
+    color: var(--gold);
+    text-transform: uppercase;
+  }
+
+  /* ---- Hero ---- */
+  .hero {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    max-width: 62rem;
+  }
+
+  .kicker {
+    font-size: clamp(0.62rem, 1.1vw, 0.8rem);
+    letter-spacing: 0.5em;
+    text-transform: uppercase;
+    color: var(--sage);
+    margin-bottom: clamp(1.2rem, 3vh, 2.2rem);
+    animation: rise 0.9s 0.15s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .kicker em { color: var(--gold); font-style: normal; }
+
+  h1 { line-height: 0.98; }
+
+  .serif {
+    display: block;
+    font-family: "Playfair Display", serif;
+    font-style: italic;
+    font-weight: 500;
+    font-size: clamp(2.6rem, 8.5vw, 6.8rem);
+    color: var(--gold);
+    letter-spacing: 0.01em;
+    animation: rise 1s 0.3s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .sans {
+    display: block;
+    font-family: "Anton", sans-serif;
+    font-weight: 400;
+    text-transform: uppercase;
+    font-size: clamp(3.4rem, 11vw, 9rem);
+    letter-spacing: 0.01em;
+    color: var(--white);
+    margin-top: 0.4rem;
+    animation: rise 1s 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .sub {
+    margin-top: clamp(1.6rem, 4vh, 2.8rem);
+    max-width: 34rem;
+    font-weight: 300;
+    font-size: clamp(0.95rem, 1.6vw, 1.15rem);
+    line-height: 1.65;
+    color: var(--sage);
+    animation: rise 1s 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .sub strong { color: var(--white); font-weight: 500; }
+
+  /* ---- Footer row ---- */
+  .foot {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    animation: rise 1s 0.75s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .pulse {
+    position: relative;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--gold);
+    flex: none;
+  }
+
+  .pulse::after {
+    content: "";
+    position: absolute;
+    inset: -8px;
+    border-radius: 50%;
+    border: 1px solid var(--gold);
+    animation: ping 2.4s ease-out infinite;
+  }
+
+  @keyframes ping {
+    0%   { transform: scale(0.4); opacity: 0.9; }
+    100% { transform: scale(1.6); opacity: 0; }
+  }
+
+  .foot p {
+    font-size: clamp(0.7rem, 1.1vw, 0.82rem);
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--gold-dim);
+  }
+
+  /* ---- Vertical side label ---- */
+  .side {
+    position: fixed;
+    right: clamp(0.9rem, 2.5vw, 2.2rem);
+    bottom: clamp(2rem, 8vh, 4rem);
+    z-index: 3;
+    writing-mode: vertical-rl;
+    font-size: 0.68rem;
+    letter-spacing: 0.55em;
+    text-transform: uppercase;
+    color: var(--sage);
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    animation: rise 1s 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .side::after {
+    content: "";
+    width: 1px;
+    height: 3.4rem;
+    background: linear-gradient(to bottom, var(--gold), transparent);
+  }
+
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(26px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; }
+  }
+
+  @media (max-width: 640px) {
+    .side { display: none; }
+    .hero { justify-content: flex-end; padding-bottom: 3rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="bg"></div>
+
+<svg class="contours" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <g fill="none" stroke="#2e5c46" stroke-width="1" opacity="0.5">
+    <path d="M-50 80 C 300 20, 700 140, 1100 60 S 1500 100, 1500 100"/>
+    <path d="M-50 170 C 350 110, 750 230, 1150 150 S 1500 190, 1500 190"/>
+    <path d="M-50 260 C 300 200, 700 320, 1100 240 S 1500 280, 1500 280"/>
+    <path d="M-50 350 C 350 290, 750 410, 1150 330 S 1500 370, 1500 370"/>
+    <path d="M-50 440 C 300 380, 700 500, 1100 420 S 1500 460, 1500 460"/>
+    <path d="M-50 530 C 350 470, 750 590, 1150 510 S 1500 550, 1500 550"/>
+    <path d="M-50 620 C 300 560, 700 680, 1100 600 S 1500 640, 1500 640"/>
+    <path d="M-50 710 C 350 650, 750 770, 1150 690 S 1500 730, 1500 730"/>
+    <path d="M-50 800 C 300 740, 700 860, 1100 780 S 1500 820, 1500 820"/>
+    <path d="M-50 890 C 350 830, 750 950, 1150 870 S 1500 910, 1500 910"/>
+  </g>
+</svg>
+
+<div class="grain"></div>
+
+<main class="frame">
+  <header>
+    <div class="brand">
+      <strong>RUNDUMWACHTBERG</strong>
+      <span>Hausmeisterservice</span>
+    </div>
+  </header>
+
+  <section class="hero">
+    <p class="kicker">Wachtberg <em>·</em> Bonn <em>·</em> Rhein-Sieg-Kreis</p>
+    <h1>
+      <span class="serif">Unsere Webseite</span>
+      <span class="sans">wird bearbeitet.</span>
+    </h1>
+    <p class="sub">
+      Wir arbeiten gerade an unserem neuen Online-Auftritt. Schon bald finden Sie hier
+      alles rund um <strong>Gartenpflege, Hausmeisterservice und Winterdienst</strong> —
+      verlässlich, gründlich, fair.
+    </p>
+  </section>
+
+  <footer class="foot">
+    <span class="pulse" aria-hidden="true"></span>
+    <p>Wir sind bald wieder für Sie da</p>
+  </footer>
+</main>
+
+<aside class="side" aria-hidden="true">In Arbeit</aside>
+
+</body>
+</html>
