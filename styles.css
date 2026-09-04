@@ -440,15 +440,25 @@ footer a:hover { color: var(--sand); }
 }
 
 /* ---------- Mobil: Hero mit Figur in der Sprechblase ---------- */
+.bubble-fig { display: none; }
 @media (max-width: 680px) {
+  .hero { padding-top: 1rem; }
   .hero-copy { display: contents; }
-  .hero .wrap { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0; }
-  .bubble { grid-row: 1; grid-column: 1; position: relative; max-width: none; min-height: 380px; padding: 1.1rem 1.1rem calc(53vw - .3rem); margin: 0; }
+  .hero .wrap { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0; padding-bottom: 1.4rem; }
+  /* Reihenfolge: Eyebrow, Ueberschrift, Einleitung, dann Sprechblase mit Figur */
+  .hero .eyebrow { margin: 0 0 .6rem; font-size: .7rem; }
+  .hero h1 { font-size: 2.15rem; }
+  .hero .lead { font-size: 1rem; margin: .6rem 0 0; }
+  .lead-more { display: none; }
+  .bubble { grid-row: 4; grid-column: 1; display: flow-root; max-width: none; padding: .9rem 1rem .9rem; margin: 1.1rem 0 0; }
   .bubble::before, .bubble::after { display: none; }
-  .bubble .sig { position: absolute; left: 1.1rem; bottom: calc(33vw - .8rem); max-width: 44%; font-size: 1.3rem; line-height: 1.1; margin: 0; }
-  .hero-marco { grid-row: 1; grid-column: 1; order: 0; align-self: end; justify-self: end; width: 50%; margin: 0 14px 2px 0; z-index: 2; }
-  .hero .eyebrow { margin-top: 1.5rem; }
-  .hero-marco img { width: 100%; margin: 0; }
+  .bubble .hi { font-size: 1.45rem; margin-bottom: .35rem; }
+  .bubble p { font-size: .93rem; line-height: 1.45; }
+  .bubble .sig { margin-top: 2.4rem; font-size: 1.2rem; line-height: 1.1; }
+  /* Figur: fester Bereich rechts, Bild sitzt unten auf der Blasenkante; der Text laeuft um Kopf und Schulter */
+  .bubble-fig { display: flex; align-items: flex-end; float: right; width: 56%; height: 300px; margin: -.2rem -.4rem -.9rem .4rem;
+    shape-outside: polygon(40% 37%, 67% 37%, 72% 52%, 100% 60%, 100% 100%, 0% 100%, 0% 74%, 10% 66%, 22% 60%, 33% 56%, 36% 48%); shape-margin: 8px; }
+  .bubble-fig img { display: block; width: 100%; height: auto; }
+  .hero-marco { display: none; }
   .hero-ctas { display: none; }
-  .hero .lead { margin-bottom: 2rem; }
 }
