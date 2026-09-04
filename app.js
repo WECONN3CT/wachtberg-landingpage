@@ -15,10 +15,13 @@
   };
 
   const P = {
-    privat: {
-      S: { label: "Klein", area: "bis 300 m² Grundstück", hedge: "bis 20 m Hecke", path: "bis 25 m Räumstrecke" },
-      M: { label: "Mittel", area: "bis 700 m² Grundstück", hedge: "bis 40 m Hecke", path: "bis 50 m Räumstrecke" },
-      L: { label: "Groß", area: "bis 1.500 m² Grundstück", hedge: "bis 80 m Hecke", path: "bis 100 m Räumstrecke" },
+    jobs: {
+      garten: { label: "Gartenpflege", sub: "Rasen, Beete, Sträucher, regelmäßig" },
+      hecke: { label: "Heckenschnitt", sub: "Formschnitt, Rückschnitt, Entsorgung" },
+      laub: { label: "Laub & Rinnen", sub: "Herbstputz, Rinnen, Wege und Einfahrt" },
+      winter: { label: "Winterdienst", sub: "Räumen und streuen, Streugut inklusive" },
+      tonnen: { label: "Tonnen-Service", sub: "Raus und rein an allen Abfuhrtagen" },
+      reparatur: { label: "Kleinreparaturen", sub: "Montage und kleine Arbeiten am Haus" },
     },
     tasks: {
       rasen: { label: "Rasen mähen & Kanten" },
@@ -48,7 +51,7 @@
   };
 
   // ---------- Zustand ----------
-  const state = { type: null, size: null, tasks: new Set(), timing: null, modules: new Set(["garten"]), season: null, units: 6, floors: 3, mfhModules: new Set() };
+  const state = { type: null, jobs: new Set(), sqm: 500, tasks: new Set(), timing: null, season: null, units: 6, floors: 3, mfhModules: new Set() };
   let step = 1;
   const TOTAL = 4;
 
@@ -125,14 +128,15 @@
   function stepDetails() {
     const s = document.createElement("div"); s.className = "step";
     if (state.type === "privat") {
-      s.innerHTML = `<h3>Wie groß ist Ihr Grundstück?</h3><p class="hint">Grob geschätzt reicht. Den Rest schaue ich mir vor Ort an.</p>`;
+      s.innerHTML = `<h3>Was soll ich übernehmen?</h3><p class="hint">Mehrfachauswahl möglich. Was nicht dabei ist, schreiben Sie mir am Ende einfach dazu.</p>`;
       const grid = document.createElement("div"); grid.className = "choices cols-3";
-      Object.entries(P.privat).forEach(([k, v]) => grid.appendChild(choiceBtn({
-        key: k, title: `${k} · ${v.label}`, sub: `${v.area}<br>${v.hedge}, ${v.path}`, on: state.size === k,
-        onClick: () => { state.size = k; step = 3; render(); },
+      const icons = { garten: ICONS.mower, hecke: ICONS.scissors, laub: ICONS.leaf, winter: ICONS.snow, tonnen: ICONS.bin, reparatur: ICONS.tool };
+      Object.entries(P.jobs).forEach(([k, t]) => grid.appendChild(choiceBtn({
+        key: k, icon: icons[k], title: t.label, sub: t.sub, multi: true, on: state.jobs.has(k),
+        onClick: (e) => { const b = e.currentTarget; state.jobs.has(k) ? state.jobs.delete(k) : state.jobs.add(k); b.classList.toggle("on"); b.setAttribute("aria-pressed", b.classList.contains("on")); fwd.disabled = state.jobs.size === 0; },
       })));
       s.appendChild(grid); body.appendChild(s);
-      navButtons({ backTo: 1, next: () => { step = 3; render(); }, canNext: !!state.size });
+      const fwd = navButtons({ backTo: 1, next: () => { step = 3; render(); }, canNext: state.jobs.size > 0 });
     } else if (state.type === "zuruf") {
       s.innerHTML = `<h3>Was soll erledigt werden?</h3><p class="hint">Mehrfachauswahl möglich. Anfahrt und Werkzeug bringe ich mit.</p>`;
       const grid = document.createElement("div"); grid.className = "choices cols-2";
@@ -166,19 +170,17 @@
   function stepOptions() {
     const s = document.createElement("div"); s.className = "step";
     if (state.type === "privat") {
-      const sz = P.privat[state.size];
-      s.innerHTML = `<h3>Was soll ich übernehmen?</h3><p class="hint">Gartenpflege ist die Basis. Winterdienst und Tonnen-Service können Sie dazunehmen.</p>`;
-      const grid = document.createElement("div"); grid.className = "choices cols-3";
-      const mods = [
-        { key: "garten", icon: ICONS.mower, title: "Gartenpflege", sub: "Rasen alle 14 Tage, Hecken 2×, Laub 2×, Frühjahrs- und Herbstreinigung", fixed: true },
-        { key: "winter", icon: ICONS.snow, title: "Winterdienst", sub: "Räumen und streuen ab 6 Uhr, Räum- und Streupflicht übernommen, Streugut inklusive" },
-        { key: "tonnen", icon: ICONS.bin, title: "Tonnen-Service", sub: "Alle Tonnen an allen Abfuhrtagen raus und wieder rein" },
-      ];
-      mods.forEach(m => grid.appendChild(choiceBtn({
-        ...m, multi: true, on: state.modules.has(m.key),
-        onClick: (e) => { if (m.fixed) return; const b = e.currentTarget; state.modules.has(m.key) ? state.modules.delete(m.key) : state.modules.add(m.key); b.classList.toggle("on"); b.setAttribute("aria-pressed", b.classList.contains("on")); },
-      })));
-      s.appendChild(grid);
+      s.innerHTML = `<h3>Wie groß ist Ihr Grundstück?</h3><p class="hint">Grob geschätzt reicht. Ich schaue es mir vor Ort an.</p>
+        <div class="slider">
+          <output id="sqm-out"></output>
+          <input type="range" id="sqm" min="100" max="2000" step="50" value="${state.sqm}" aria-label="Grundstücksgröße in Quadratmetern">
+          <div class="slider-scale"><span>100 m²</span><span>500 m²</span><span>1.000 m²</span><span>2.000 m²+</span></div>
+        </div>`;
+      const range = el("#sqm", s), out = el("#sqm-out", s);
+      const fmt = (v) => v >= 2000 ? "über 2.000 m²" : `ca. ${v.toLocaleString("de-DE")} m²`;
+      const paint = () => { out.textContent = fmt(state.sqm); range.style.setProperty("--p", ((state.sqm - 100) / 1900 * 100) + "%"); };
+      range.addEventListener("input", () => { state.sqm = parseInt(range.value, 10); paint(); });
+      paint();
       s.insertAdjacentHTML("beforeend", `<h3 style="margin-top:1.6rem">Wann soll es losgehen?</h3><p class="hint">Damit ich weiß, was zuerst ansteht.</p>`);
       s.appendChild(chips(["Sofort", "Frühjahr", "Sommer", "Herbst", "Winter"], "season"));
       body.appendChild(s);
@@ -219,10 +221,8 @@
   function summaryLines() {
     const L = [];
     if (state.type === "privat") {
-      const sz = P.privat[state.size];
-      L.push(["Objekt", `Haus mit Garten, Grundstück ${state.size} (${sz.area})`]);
-      const mods = ["Gartenpflege"]; if (state.modules.has("winter")) mods.push("Winterdienst"); if (state.modules.has("tonnen")) mods.push("Tonnen-Service");
-      L.push(["Gewünscht", mods.join(", ")]);
+      L.push(["Objekt", `Haus mit Garten, ${state.sqm >= 2000 ? "über 2.000" : "ca. " + state.sqm.toLocaleString("de-DE")} m² Grundstück`]);
+      L.push(["Gewünscht", [...state.jobs].map(k => P.jobs[k].label).join(", ")]);
       if (state.season) L.push(["Start", state.season]);
     } else if (state.type === "zuruf") {
       L.push(["Objekt", "Einzelne Aufgaben auf Zuruf"]);
@@ -306,7 +306,7 @@
     const back = document.createElement("button"); back.type = "button"; back.className = "link-btn"; back.textContent = "← Angaben ändern";
     back.addEventListener("click", () => { step = 3; render(); });
     const restart = document.createElement("button"); restart.type = "button"; restart.className = "link-btn"; restart.textContent = "Neu starten";
-    restart.addEventListener("click", () => { Object.assign(state, { type: null, size: null, timing: null, season: null }); state.tasks.clear(); state.mfhModules.clear(); state.modules = new Set(["garten"]); step = 1; render(); });
+    restart.addEventListener("click", () => { Object.assign(state, { type: null, timing: null, season: null, sqm: 500 }); state.jobs.clear(); state.tasks.clear(); state.mfhModules.clear(); step = 1; render(); });
     nav.append(back, restart);
   }
 

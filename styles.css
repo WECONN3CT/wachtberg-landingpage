@@ -473,3 +473,15 @@ footer a:hover { color: var(--sand); }
   .hero-marco { display: none; }
   .hero-ctas { display: none; }
 }
+
+/* ---------- Schieberegler (Grundstücksgröße) ---------- */
+.slider { padding: .2rem 0 .6rem; }
+.slider output { display: block; font-size: 2.1rem; font-weight: 900; color: var(--forest); line-height: 1.1; margin-bottom: .8rem; font-variant-numeric: tabular-nums; }
+.slider input[type="range"] { --p: 25%; -webkit-appearance: none; appearance: none; width: 100%; height: 44px; background: transparent; margin: 0; cursor: pointer; }
+.slider input[type="range"]::-webkit-slider-runnable-track { height: 10px; border-radius: 999px; background: linear-gradient(90deg, var(--leaf) var(--p), rgba(28,58,42,.15) var(--p)); }
+.slider input[type="range"]::-moz-range-track { height: 10px; border-radius: 999px; background: rgba(28,58,42,.15); }
+.slider input[type="range"]::-moz-range-progress { height: 10px; border-radius: 999px; background: var(--leaf); }
+.slider input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 30px; height: 30px; margin-top: -10px; border-radius: 50%; background: #fff; border: 3px solid var(--forest); box-shadow: 0 2px 8px rgba(28,58,42,.3); }
+.slider input[type="range"]::-moz-range-thumb { width: 24px; height: 24px; border-radius: 50%; background: #fff; border: 3px solid var(--forest); box-shadow: 0 2px 8px rgba(28,58,42,.3); }
+.slider input[type="range"]:focus-visible { outline: 3px solid rgba(61,122,82,.35); outline-offset: 4px; border-radius: 999px; }
+.slider-scale { display: flex; justify-content: space-between; font-size: .78rem; font-weight: 800; color: var(--muted); margin-top: .2rem; }
