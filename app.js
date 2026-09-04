@@ -354,4 +354,6 @@
   // Scroll-Reveal
   const io = new IntersectionObserver((es) => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }), { threshold: 0.12 });
   document.querySelectorAll(".reveal").forEach(n => io.observe(n));
+  // Sicherheitsnetz: falls der Observer nicht feuert (Tab im Hintergrund, alte Browser), alles einblenden
+  setTimeout(() => document.querySelectorAll(".reveal:not(.in)").forEach(n => n.classList.add("in")), 2500);
 })();
