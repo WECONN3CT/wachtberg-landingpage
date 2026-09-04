@@ -1,7 +1,7 @@
 # RundUmWachtberg – Flyer-Landingpage
 
 Statische Landingpage für den Flyer von RundUmWachtberg Hausmeisterservice (Marco Erlenbach, Wachtberg-Pech).
-Gehostet über GitHub Pages: https://weconn3ct.github.io/wachtberg-landingpage/
+Gehostet über GitHub Pages: https://anfrage.rundumwachtberg.de/
 
 ## Aufbau
 - `index.html` – Landingpage (Hero mit Cartoon-Marco, Leistungen, Kostenvoranschlag-Wizard, Ablauf, FAQ, CTA)
