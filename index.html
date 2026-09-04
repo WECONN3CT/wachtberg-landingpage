@@ -73,6 +73,7 @@
   <div class="swoosh"></div>
   <img class="deco deco-leaves" src="assets/leaves-tr.webp" alt="" aria-hidden="true">
   <img class="deco deco-tree" src="assets/tree-left.webp" alt="" aria-hidden="true">
+  <canvas class="wind" data-count="16" data-opacity="0.7" aria-hidden="true"></canvas>
   <div class="wrap">
     <div class="hero-copy">
       <div class="bubble">
@@ -171,7 +172,7 @@
       </div>
       <aside class="wizard-side reveal">
         <div class="card">
-          <img src="assets/marco-trimmer.webp" alt="" width="1000" height="833" loading="lazy">
+          <img src="assets/marco-trimmer.webp" alt="" width="1040" height="815" loading="lazy">
           <div class="hand">„Ich sage Ihnen vorher, was es kostet. Dabei bleibt es.“</div>
           <p>Anfahrt und Werkzeug sind immer inklusive. Zusatzkosten wie Grünschnitt-Entsorgung nenne ich vorher.</p>
         </div>
@@ -209,7 +210,7 @@
       </div>
     </div>
     <div class="why-marco reveal">
-      <img src="assets/marco-trimmer.webp" alt="Marco Erlenbach mit Heckenschere" width="1000" height="833" loading="lazy">
+      <img src="assets/marco-trimmer.webp" alt="Marco Erlenbach mit Heckenschere" width="1040" height="815" loading="lazy">
     </div>
   </div>
 </section>
@@ -248,26 +249,57 @@
 
 </main>
 
-<footer>
-  <div class="wrap">
-    <div>
-      <h4>RundUmWachtberg Hausmeisterservice</h4>
-      <p>Inhaber Marco Erlenbach<br>Pecher Hauptstraße 78 · 53343 Wachtberg<br>Termine nach Absprache, Rückmeldung innerhalb eines Werktags.</p>
+<footer id="footer">
+  <div class="foot-line" aria-hidden="true"></div>
+  <div class="foot-glow" aria-hidden="true"></div>
+  <canvas class="wind" data-count="12" data-opacity="0.5" data-dark="1" aria-hidden="true"></canvas>
+  <div class="wrap foot-inner">
+    <div class="foot-head">
+      <a href="#top" aria-label="Nach oben"><img src="assets/logo.webp" alt="RundUmWachtberg Hausmeisterservice" width="220" height="118"></a>
+      <p class="foot-quote">„Ein Grundstück ist Vertrauenssache. Deshalb komme ich selbst und schicke niemanden vor.“</p>
     </div>
-    <div>
-      <h4>Kontakt</h4>
-      <ul>
-        <li><a href="tel:+4915172443749">+49 151 72443749</a></li>
-        <li><a href="mailto:info@rundumwachtberg.de">info@rundumwachtberg.de</a></li>
-        <li><a href="https://www.rundumwachtberg.de">www.RundUmWachtberg.de</a></li>
-      </ul>
+    <div class="foot-grid">
+      <div>
+        <div class="foot-eyebrow">Navigation</div>
+        <ul>
+          <li><a href="#leistungen">Leistungen</a></li>
+          <li><a href="#rechner">Kostenvoranschlag</a></li>
+          <li><a href="#ablauf">So läuft's</a></li>
+          <li><a href="#fragen">Fragen</a></li>
+          <li><a href="https://www.rundumwachtberg.de">Zur Hauptseite</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="foot-eyebrow">Leistungen</div>
+        <ul>
+          <li><a href="#leistungen">Gartenpflege</a></li>
+          <li><a href="#leistungen">Heckenschnitt</a></li>
+          <li><a href="#leistungen">Winterdienst</a></li>
+          <li><a href="#leistungen">Hausmeisterdienste</a></li>
+          <li><a href="#leistungen">Laubreinigung</a></li>
+          <li><a href="#leistungen">Entrümpelung</a></li>
+        </ul>
+      </div>
+      <div class="foot-card">
+        <div class="foot-eyebrow">Direkt erreichen</div>
+        <a class="foot-phone" href="tel:+4915172443749">+49 151 72443749</a>
+        <a class="foot-mail" href="mailto:info@rundumwachtberg.de">info@rundumwachtberg.de</a>
+        <p>Pecher Hauptstraße 78, 53343 Wachtberg<br>Rückmeldung innerhalb eines Werktags</p>
+        <a class="foot-cta" href="#rechner">Anfrage senden <span aria-hidden="true">→</span></a>
+      </div>
+      <div>
+        <div class="foot-eyebrow">Einsatzgebiet</div>
+        <ul class="foot-chips">
+          <li>Pech</li><li>Berkum</li><li>Villip</li><li>Niederbachem</li><li>Adendorf</li><li>Gimmersdorf</li><li>Bonn-Bad Godesberg</li><li>Bonn-Mehlem</li><li>Meckenheim</li>
+        </ul>
+        <p class="foot-note">Zuhause in Wachtberg-Pech, unterwegs in allen Ortsteilen und der Nachbarschaft.</p>
+      </div>
     </div>
-    <div>
-      <h4>Einsatzgebiet</h4>
-      <ul><li>Wachtberg (alle Ortsteile)</li><li>Bonn-Bad Godesberg</li><li>Meckenheim</li><li>Rhein-Sieg-Kreis</li></ul>
+    <div class="foot-legal">
+      <div>© 2026 RundUmWachtberg · Marco Erlenbach · <span class="foot-claim">Zuverlässig · Flexibel · Gleich nebenan</span></div>
+      <div class="foot-links"><a href="impressum.html">Impressum</a><a href="datenschutz.html">Datenschutz</a><a href="#top">Nach oben <span aria-hidden="true">↑</span></a></div>
     </div>
   </div>
-  <div class="legal">© 2026 RundUmWachtberg · <a href="impressum.html">Impressum</a> · <a href="datenschutz.html">Datenschutz</a></div>
 </footer>
 
 <!-- Mobile Sticky-Bar -->
@@ -277,5 +309,6 @@
 </div>
 
 <script src="app.js" defer></script>
+<script src="wind.js" defer></script>
 </body>
 </html>
