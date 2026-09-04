@@ -438,3 +438,17 @@ footer a:hover { color: var(--sand); }
   .cta-band .actions .btn { width: 100%; justify-content: center; }
   .lead-box .btn, .hero-ctas .btn, .cta-band .btn { white-space: normal; }
 }
+
+/* ---------- Mobil: Hero mit Figur in der Sprechblase ---------- */
+@media (max-width: 680px) {
+  .hero-copy { display: contents; }
+  .hero .wrap { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .bubble { grid-row: 1; grid-column: 1; position: relative; max-width: none; min-height: 380px; padding: 1.1rem 1.1rem calc(53vw - .3rem); margin: 0; }
+  .bubble::before, .bubble::after { display: none; }
+  .bubble .sig { position: absolute; left: 1.1rem; bottom: calc(33vw - .8rem); max-width: 44%; font-size: 1.3rem; line-height: 1.1; margin: 0; }
+  .hero-marco { grid-row: 1; grid-column: 1; order: 0; align-self: end; justify-self: end; width: 50%; margin: 0 14px 2px 0; z-index: 2; }
+  .hero .eyebrow { margin-top: 1.5rem; }
+  .hero-marco img { width: 100%; margin: 0; }
+  .hero-ctas { display: none; }
+  .hero .lead { margin-bottom: 2rem; }
+}
