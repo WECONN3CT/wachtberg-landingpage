@@ -1,6 +1,6 @@
-/* RundUmWachtberg Landingpage – Kostenvoranschlag-Wizard
-   Preise laut Preisliste 2026 (docs/preisstruktur im Hauptprojekt). Alles "ab"-Richtwerte,
-   Festpreis gibt es nach der kostenlosen Besichtigung. */
+/* RundUmWachtberg Landingpage – Anfrage-Wizard
+   Drei Fragen zum Objekt, dann Kontaktdaten. Keine Preise auf der Seite:
+   Das Angebot schickt Marco per E-Mail (Formular-Endpoint oder Fallback per E-Mail-Programm). */
 
 (function () {
   "use strict";
@@ -15,22 +15,19 @@
   };
 
   const P = {
-    hourly: 42, minHours: 2, taxBonus: 0.20,
     privat: {
-      S: { label: "Klein", area: "bis 300 m² Grundstück", hedge: "bis 20 m Hecke", path: "bis 25 m Räumstrecke", garden: 52, winterAdd: 27, winterSeason: 349, winterSingle: 49 },
-      M: { label: "Mittel", area: "bis 700 m² Grundstück", hedge: "bis 40 m Hecke", path: "bis 50 m Räumstrecke", garden: 100, winterAdd: 35, winterSeason: 449, winterSingle: 69 },
-      L: { label: "Groß", area: "bis 1.500 m² Grundstück", hedge: "bis 80 m Hecke", path: "bis 100 m Räumstrecke", garden: 179, winterAdd: 50, winterSeason: 649, winterSingle: 99 },
+      S: { label: "Klein", area: "bis 300 m² Grundstück", hedge: "bis 20 m Hecke", path: "bis 25 m Räumstrecke" },
+      M: { label: "Mittel", area: "bis 700 m² Grundstück", hedge: "bis 40 m Hecke", path: "bis 50 m Räumstrecke" },
+      L: { label: "Groß", area: "bis 1.500 m² Grundstück", hedge: "bis 80 m Hecke", path: "bis 100 m Räumstrecke" },
     },
-    tonnenPaket: 19,
-    mfh: { perUnit: 29, min: 149, garden: 59, stairsPerFloor: 45, winterSeason: 590 },
     tasks: {
-      rasen: { label: "Rasen mähen & Kanten", hours: 2 },
-      hecke: { label: "Heckenschnitt", hours: 3 },
-      laub: { label: "Laub, Rinnen & Herbstputz", hours: 3 },
-      reparatur: { label: "Kleinreparaturen & Montage", hours: 2 },
-      entruempelung: { label: "Entrümpelung & Transport", hours: 4 },
-      urlaub: { label: "Bewässerung im Urlaub", hours: 3, note: "3 Besuche à 1 Std." },
-      winter: { label: "Winterdienst, Einzeleinsatz", flat: 49 },
+      rasen: { label: "Rasen mähen & Kanten" },
+      hecke: { label: "Heckenschnitt" },
+      laub: { label: "Laub, Rinnen & Herbstputz" },
+      reparatur: { label: "Kleinreparaturen & Montage" },
+      entruempelung: { label: "Entrümpelung & Transport" },
+      urlaub: { label: "Bewässerung im Urlaub", note: "Während Sie weg sind" },
+      winter: { label: "Winterdienst", note: "Einzeleinsatz oder ganze Saison" },
     },
   };
 
@@ -63,7 +60,6 @@
   const progress = el("#wizard-progress");
   const stepLabel = el("#wizard-step");
 
-  const eur = (n, dec = 0) => n.toLocaleString("de-DE", { minimumFractionDigits: dec, maximumFractionDigits: dec }) + " €";
   const track = (name, data) => {
     try {
       if (window.fbq) window.fbq("trackCustom", name, data || {});
@@ -75,10 +71,10 @@
   // ---------- Render ----------
   function render() {
     progress.style.width = (step / TOTAL * 100) + "%";
-    stepLabel.textContent = step < TOTAL ? `Schritt ${step} von ${TOTAL}` : "Ihr Kostenvoranschlag";
+    stepLabel.textContent = `Schritt ${step} von ${TOTAL}`;
     body.innerHTML = "";
     nav.innerHTML = "";
-    const view = { 1: stepType, 2: stepDetails, 3: stepOptions, 4: stepResult }[step];
+    const view = { 1: stepType, 2: stepDetails, 3: stepOptions, 4: stepContact }[step];
     view();
     if (rendered) {
       const top = wizard.getBoundingClientRect().top;
@@ -129,7 +125,7 @@
   function stepDetails() {
     const s = document.createElement("div"); s.className = "step";
     if (state.type === "privat") {
-      s.innerHTML = `<h3>Wie groß ist Ihr Grundstück?</h3><p class="hint">Grob geschätzt reicht. Den genauen Preis gibt es nach der kostenlosen Besichtigung.</p>`;
+      s.innerHTML = `<h3>Wie groß ist Ihr Grundstück?</h3><p class="hint">Grob geschätzt reicht. Den Rest schaue ich mir vor Ort an.</p>`;
       const grid = document.createElement("div"); grid.className = "choices cols-3";
       Object.entries(P.privat).forEach(([k, v]) => grid.appendChild(choiceBtn({
         key: k, title: `${k} · ${v.label}`, sub: `${v.area}<br>${v.hedge}, ${v.path}`, on: state.size === k,
@@ -138,23 +134,22 @@
       s.appendChild(grid); body.appendChild(s);
       navButtons({ backTo: 1, next: () => { step = 3; render(); }, canNext: !!state.size });
     } else if (state.type === "zuruf") {
-      s.innerHTML = `<h3>Was soll erledigt werden?</h3><p class="hint">Mehrfachauswahl möglich. Ich rechne mit 42 € pro Stunde, mindestens zwei Stunden, Anfahrt und Werkzeug inklusive.</p>`;
+      s.innerHTML = `<h3>Was soll erledigt werden?</h3><p class="hint">Mehrfachauswahl möglich. Anfahrt und Werkzeug bringe ich mit.</p>`;
       const grid = document.createElement("div"); grid.className = "choices cols-2";
       const icons = { rasen: ICONS.mower, hecke: ICONS.scissors, laub: ICONS.leaf, reparatur: ICONS.tool, entruempelung: ICONS.truck, urlaub: ICONS.drop, winter: ICONS.snow };
       Object.entries(P.tasks).forEach(([k, t]) => {
-        const price = t.flat ? `ab ${eur(t.flat)}` : `ca. ${t.hours} Std.`;
         grid.appendChild(choiceBtn({
-          key: k, icon: icons[k], title: t.label, sub: t.note || "", price, multi: true, on: state.tasks.has(k),
+          key: k, icon: icons[k], title: t.label, sub: t.note || "", multi: true, on: state.tasks.has(k),
           onClick: (e) => { const b = e.currentTarget; state.tasks.has(k) ? state.tasks.delete(k) : state.tasks.add(k); b.classList.toggle("on"); b.setAttribute("aria-pressed", b.classList.contains("on")); fwd.disabled = state.tasks.size === 0; },
         }));
       });
       s.appendChild(grid); body.appendChild(s);
       const fwd = navButtons({ backTo: 1, next: () => { step = 3; render(); }, canNext: state.tasks.size > 0 });
     } else {
-      s.innerHTML = `<h3>Wie groß ist das Objekt?</h3><p class="hint">Für die Grundbetreuung rechne ich je Wohneinheit, mindestens 149 € im Monat.</p>`;
+      s.innerHTML = `<h3>Wie groß ist das Objekt?</h3><p class="hint">Damit ich weiß, worum es geht. Grob reicht.</p>`;
       const row = document.createElement("div"); row.className = "field-row";
       row.innerHTML = `
-        <div><label>Wohneinheiten</label><div class="stepper" data-k="units"><button type="button" aria-label="weniger">−</button><output>${state.units}</output><button type="button" aria-label="mehr">+</button></div><small>Je Wohneinheit 29 € netto im Monat</small></div>
+        <div><label>Wohneinheiten</label><div class="stepper" data-k="units"><button type="button" aria-label="weniger">−</button><output>${state.units}</output><button type="button" aria-label="mehr">+</button></div><small>Ungefähre Zahl reicht</small></div>
         <div><label>Etagen im Treppenhaus</label><div class="stepper" data-k="floors"><button type="button" aria-label="weniger">−</button><output>${state.floors}</output><button type="button" aria-label="mehr">+</button></div><small>Nur relevant, wenn ich das Treppenhaus reinigen soll</small></div>`;
       row.querySelectorAll(".stepper").forEach(st => {
         const k = st.dataset.k, out = st.querySelector("output"), [minus, plus] = st.querySelectorAll("button");
@@ -175,9 +170,9 @@
       s.innerHTML = `<h3>Was soll ich übernehmen?</h3><p class="hint">Gartenpflege ist die Basis. Winterdienst und Tonnen-Service können Sie dazunehmen.</p>`;
       const grid = document.createElement("div"); grid.className = "choices cols-3";
       const mods = [
-        { key: "garten", icon: ICONS.mower, title: "Gartenpflege", sub: "Rasen alle 14 Tage, Hecken 2×, Laub 2×, Frühjahrs- und Herbstreinigung", price: `ab ${eur(sz.garden)}/Monat`, fixed: true },
-        { key: "winter", icon: ICONS.snow, title: "Winterdienst", sub: "Räumen und streuen ab 6 Uhr, Räum- und Streupflicht übernommen, Streugut inklusive", price: `+ ${eur(sz.winterAdd)}/Monat` },
-        { key: "tonnen", icon: ICONS.bin, title: "Tonnen-Service", sub: "Alle Tonnen an allen Abfuhrtagen raus und wieder rein", price: `+ ${eur(P.tonnenPaket)}/Monat` },
+        { key: "garten", icon: ICONS.mower, title: "Gartenpflege", sub: "Rasen alle 14 Tage, Hecken 2×, Laub 2×, Frühjahrs- und Herbstreinigung", fixed: true },
+        { key: "winter", icon: ICONS.snow, title: "Winterdienst", sub: "Räumen und streuen ab 6 Uhr, Räum- und Streupflicht übernommen, Streugut inklusive" },
+        { key: "tonnen", icon: ICONS.bin, title: "Tonnen-Service", sub: "Alle Tonnen an allen Abfuhrtagen raus und wieder rein" },
       ];
       mods.forEach(m => grid.appendChild(choiceBtn({
         ...m, multi: true, on: state.modules.has(m.key),
@@ -187,26 +182,26 @@
       s.insertAdjacentHTML("beforeend", `<h3 style="margin-top:1.6rem">Wann soll es losgehen?</h3><p class="hint">Damit ich weiß, was zuerst ansteht.</p>`);
       s.appendChild(chips(["Sofort", "Frühjahr", "Sommer", "Herbst", "Winter"], "season"));
       body.appendChild(s);
-      navButtons({ backTo: 2, next: () => { step = 4; render(); }, nextLabel: "Kostenvoranschlag anzeigen" });
+      navButtons({ backTo: 2, next: () => { step = 4; render(); }, nextLabel: "Weiter zu den Kontaktdaten" });
     } else if (state.type === "zuruf") {
       s.innerHTML = `<h3>Wann soll ich kommen?</h3><p class="hint">Termine nach Absprache, oft auch kurzfristig. Rückmeldung innerhalb eines Werktags.</p>`;
       s.appendChild(chips(["So bald wie möglich", "In den nächsten Wochen", "Frühjahr", "Herbst", "Winter"], "timing"));
       body.appendChild(s);
-      navButtons({ backTo: 2, next: () => { step = 4; render(); }, nextLabel: "Kostenvoranschlag anzeigen" });
+      navButtons({ backTo: 2, next: () => { step = 4; render(); }, nextLabel: "Weiter zu den Kontaktdaten" });
     } else {
       s.innerHTML = `<h3>Welche Module brauchen Sie?</h3><p class="hint">Die Grundbetreuung ist immer dabei: wöchentlicher Kontrollgang, Tonnen, Außenanlagen kehren, Kleinreparaturen bis 30 Minuten, Kurzbericht an die Verwaltung.</p>`;
       const grid = document.createElement("div"); grid.className = "choices cols-3";
       const mods = [
-        { key: "garten", icon: ICONS.mower, title: "Gartenpflege", sub: "Rasen, Hecken, Beete, Laub in festem Rhythmus", price: `ab ${eur(P.mfh.garden)}/Monat` },
-        { key: "treppe", icon: ICONS.stairs, title: "Treppenhausreinigung", sub: `${state.floors} Etagen, wöchentlich`, price: `ab ${eur(P.mfh.stairsPerFloor * state.floors)}/Monat` },
-        { key: "winter", icon: ICONS.snow, title: "Winterdienst", sub: "Saison November bis März, Räumpflicht übernommen", price: `ab ${eur(P.mfh.winterSeason)}/Saison` },
+        { key: "garten", icon: ICONS.mower, title: "Gartenpflege", sub: "Rasen, Hecken, Beete, Laub in festem Rhythmus" },
+        { key: "treppe", icon: ICONS.stairs, title: "Treppenhausreinigung", sub: `${state.floors} Etagen, wöchentlich` },
+        { key: "winter", icon: ICONS.snow, title: "Winterdienst", sub: "Saison November bis März, Räumpflicht übernommen" },
       ];
       mods.forEach(m => grid.appendChild(choiceBtn({
         ...m, multi: true, on: state.mfhModules.has(m.key),
         onClick: (e) => { const b = e.currentTarget; state.mfhModules.has(m.key) ? state.mfhModules.delete(m.key) : state.mfhModules.add(m.key); b.classList.toggle("on"); b.setAttribute("aria-pressed", b.classList.contains("on")); },
       })));
       s.appendChild(grid); body.appendChild(s);
-      navButtons({ backTo: 2, next: () => { step = 4; render(); }, nextLabel: "Kostenvoranschlag anzeigen" });
+      navButtons({ backTo: 2, next: () => { step = 4; render(); }, nextLabel: "Weiter zu den Kontaktdaten" });
     }
   }
 
@@ -220,102 +215,80 @@
     return c;
   }
 
-  // ---------- Kalkulation ----------
-  function calc() {
-    const lines = []; let total = 0, unit = "", taxable = false, net = false;
+  // ---------- Zusammenfassung der Angaben ----------
+  function summaryLines() {
+    const L = [];
     if (state.type === "privat") {
-      const sz = P.privat[state.size]; unit = "im Monat"; taxable = true;
-      lines.push({ t: "Rundum-Paket Gartenpflege", s: `Grundstück ${state.size} (${sz.area}) · Rasen alle 14 Tage, Hecken 2×, Laub 2×, Frühjahrs- und Herbstreinigung, Entsorgung bis 4 m³`, p: sz.garden });
-      total += sz.garden;
-      if (state.modules.has("winter")) { lines.push({ t: "Winterdienst als Saisonbaustein", s: `${sz.path}, Räum- und Streupflicht übernommen, Streugut inklusive (${eur(sz.winterSeason)} je Saison, auf 12 Monate verteilt)`, p: sz.winterAdd }); total += sz.winterAdd; }
-      if (state.modules.has("tonnen")) { lines.push({ t: "Tonnen-Service", s: "Alle Tonnen an allen Abfuhrtagen, bis 4 Tonnen", p: P.tonnenPaket }); total += P.tonnenPaket; }
+      const sz = P.privat[state.size];
+      L.push(["Objekt", `Haus mit Garten, Grundstück ${state.size} (${sz.area})`]);
+      const mods = ["Gartenpflege"]; if (state.modules.has("winter")) mods.push("Winterdienst"); if (state.modules.has("tonnen")) mods.push("Tonnen-Service");
+      L.push(["Gewünscht", mods.join(", ")]);
+      if (state.season) L.push(["Start", state.season]);
     } else if (state.type === "zuruf") {
-      unit = "je Einsatz"; taxable = true; let hours = 0;
-      state.tasks.forEach(k => { const t = P.tasks[k]; if (t.flat) { lines.push({ t: t.label, s: "Räumstrecke bis 25 m, größere Strecken 69 bis 99 €", p: t.flat }); total += t.flat; } else hours += t.hours; });
-      if (hours > 0) {
-        const h = Math.max(P.minHours, hours);
-        const labels = [...state.tasks].filter(k => !P.tasks[k].flat).map(k => P.tasks[k].label).join(", ");
-        lines.unshift({ t: `Arbeitszeit, ca. ${h} Std. × ${eur(P.hourly)}`, s: `${labels}. Anfahrt und Werkzeug inklusive, Abrechnung im 15-Minuten-Takt`, p: h * P.hourly });
-        total += h * P.hourly;
-      }
+      L.push(["Objekt", "Einzelne Aufgaben auf Zuruf"]);
+      L.push(["Aufgaben", [...state.tasks].map(k => P.tasks[k].label).join(", ")]);
+      if (state.timing) L.push(["Zeitpunkt", state.timing]);
     } else {
-      unit = "im Monat, netto"; net = true;
-      const base = Math.max(P.mfh.min, state.units * P.mfh.perUnit);
-      lines.push({ t: "Grundbetreuung Mehrfamilienhaus", s: `${state.units} Wohneinheiten × ${eur(P.mfh.perUnit)} (mindestens ${eur(P.mfh.min)}) · wöchentlicher Kontrollgang, Tonnen, Außenanlagen kehren, Kleinreparaturen bis 30 Min., Kurzbericht`, p: base });
-      total += base;
-      if (state.mfhModules.has("garten")) { lines.push({ t: "Modul Gartenpflege", s: "Rasen, Hecken, Beete, Laub in festem Rhythmus", p: P.mfh.garden }); total += P.mfh.garden; }
-      if (state.mfhModules.has("treppe")) { const p = P.mfh.stairsPerFloor * state.floors; lines.push({ t: "Modul Treppenhausreinigung", s: `${state.floors} Etagen × ${eur(P.mfh.stairsPerFloor)}, wöchentlich`, p }); total += p; }
-      if (state.mfhModules.has("winter")) { const p = Math.round(P.mfh.winterSeason / 12); lines.push({ t: "Modul Winterdienst", s: `${eur(P.mfh.winterSeason)} je Saison, auf 12 Monate verteilt`, p }); total += p; }
+      L.push(["Objekt", `Mehrfamilienhaus, ${state.units} Wohneinheiten, ${state.floors} Etagen`]);
+      const mods = ["Grundbetreuung"]; if (state.mfhModules.has("garten")) mods.push("Gartenpflege"); if (state.mfhModules.has("treppe")) mods.push("Treppenhausreinigung"); if (state.mfhModules.has("winter")) mods.push("Winterdienst");
+      L.push(["Module", mods.join(", ")]);
     }
-    return { lines, total, unit, taxable, net, effective: taxable ? Math.round(total * (1 - P.taxBonus)) : null };
+    return L;
+  }
+  function summaryText() {
+    let t = "Hallo Marco, ich habe das Anfrageformular auf Ihrer Seite ausgefüllt:\n";
+    summaryLines().forEach(([k, v]) => t += `• ${k}: ${v}\n`);
+    return t + "\nIch freue mich auf Ihr Angebot. ";
   }
 
-  function summaryText(c) {
-    const who = { privat: `Haus mit Garten, Grundstück ${state.size}`, zuruf: "Einzelne Aufgaben auf Zuruf", mfh: `Hausverwaltung, ${state.units} Wohneinheiten` }[state.type];
-    const when = state.season || state.timing;
-    let t = `Hallo Marco, ich habe den Kostenvoranschlag auf Ihrer Seite gemacht:\n• ${who}\n`;
-    c.lines.forEach(l => t += `• ${l.t}: ${eur(l.p)}\n`);
-    t += `= ca. ${eur(c.total)} ${c.unit}`;
-    if (c.effective) t += ` (nach Steuerbonus ca. ${eur(c.effective)})`;
-    if (when) t += `\n• Zeitpunkt: ${when}`;
-    t += `\n\nIch hätte gern eine kostenlose Besichtigung. `;
-    return t;
-  }
-
-  // Schritt 4: Ergebnis
-  function stepResult() {
-    const c = calc();
+  // Schritt 4: Kontaktdaten, das Angebot kommt per E-Mail
+  function stepContact() {
     const s = document.createElement("div"); s.className = "step";
-    const no = "KV-" + new Date().toISOString().slice(0, 10).replace(/-/g, "") + "-" + Math.floor(100 + Math.random() * 900);
-    const who = { privat: `Haus mit Garten · Grundstück ${state.size}`, zuruf: "Einzelne Aufgaben auf Zuruf", mfh: `Mehrfamilienhaus · ${state.units} Wohneinheiten` }[state.type];
-    const when = state.season || state.timing;
-
-    let rows = c.lines.map(l => `<tr><td>${l.t}<small>${l.s}</small></td><td>${eur(l.p)}</td></tr>`).join("");
-    rows += `<tr class="total"><td>Richtwert gesamt<small>${c.net ? "zzgl. 19 % USt." : "Endpreis, keine versteckten Kosten"}</small></td><td>${eur(c.total)}<small>${c.unit}</small></td></tr>`;
-    if (c.effective) rows += `<tr class="eff"><td>Effektiv nach Steuerbonus (20 %)</td><td>${eur(c.effective)}</td></tr>`;
-
-    const note = c.net
-      ? `<p><b>Für Vermieter und Verwaltungen:</b> Hausmeister-, Garten- und Winterdienstkosten sind in der Regel als Betriebskosten auf die Mieter umlegbar (§ 2 BetrKV). Die Rechnung kommt getrennt nach umlagefähigen und nicht umlagefähigen Kosten.</p>`
-      : `<p><b>Steuerbonus für Privathaushalte:</b> 20 % der Arbeitskosten holen Sie sich über die Steuererklärung zurück (haushaltsnahe Dienstleistungen, § 35a EStG, bis 4.000 € im Jahr). Voraussetzung: Rechnung und Überweisung. ${state.type === "privat" ? `Das sind bei Ihnen etwa <b>${(c.effective / 30).toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} € am Tag</b>.` : ""} Keine Steuerberatung.</p>`;
-
+    const lines = summaryLines();
+    const rows = lines.map(([k, v]) => `<tr><td><small>${k}</small>${v}</td></tr>`).join("");
     s.innerHTML = `
-      <h3>Ihr Kostenvoranschlag ist fertig.</h3>
-      <p class="hint">Ein ehrlicher Richtwert nach meiner Preisliste 2026. Den Festpreis bekommen Sie nach der kostenlosen Besichtigung, und dabei bleibt es.</p>
+      <h3>Fast geschafft. Wohin darf ich das Angebot schicken?</h3>
+      <p class="hint">Ich schaue mir Ihre Angaben an und melde mich innerhalb eines Werktags mit einem Angebot, das zu Ihrem Grundstück passt.</p>
       <div class="result-grid">
-        <div class="estimate">
-          <div class="estimate-head"><div><b>Unverbindlicher Kostenvoranschlag</b><small>${who}${when ? " · " + when : ""}</small></div><div class="no">${no}<br><span style="color:#fff;letter-spacing:0">${new Date().toLocaleDateString("de-DE")}</span></div></div>
+        <div class="estimate summary">
+          <div class="estimate-head"><div><b>Ihre Angaben</b><small>Über „Angaben ändern“ jederzeit anpassbar</small></div></div>
           <table>${rows}</table>
-          <div class="estimate-note">${note}<p>Richtwert auf Basis der Preisliste 2026. Anfahrt und Werkzeug inklusive (Wachtberg, Bad Godesberg, Meckenheim). ${state.type === "privat" ? "Paket: 12 Monate, danach monatlich kündbar, Preis ein Jahr fest." : state.type === "zuruf" ? "Mindestens zwei Stunden, danach im 15-Minuten-Takt. Grünschnitt-Entsorgung 19 € je m³ nach Absprache." : "Angebot nach Objektbesichtigung, je nach Größe und Aufgaben."}</p></div>
+          <div class="estimate-note"><p>Unterwegs in Wachtberg, Bad Godesberg, Meckenheim und Remagen. Das Angebot kommt per E-Mail, auf Wunsch schaue ich vorher kurz bei Ihnen vorbei.</p></div>
         </div>
         <div class="lead-box" id="lead-box">
-          <h4>Kostenlose Besichtigung anfragen</h4>
-          <p class="hint">Ich melde mich innerhalb eines Werktags, schaue mir alles an und nenne Ihnen den Festpreis.</p>
-          <a class="btn btn-wa btn-lg" id="wa-result" href="#" target="_blank" rel="noopener">${waIcon()} Per WhatsApp senden</a>
-          <div class="or">oder Rückruf</div>
+          <h4>Angebot per E-Mail erhalten</h4>
           <form id="lead-form" novalidate>
             <label for="lf-name">Ihr Name</label>
             <input id="lf-name" name="name" type="text" autocomplete="name" required placeholder="Vor- und Nachname">
-            <label for="lf-phone">Telefon</label>
-            <input id="lf-phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" required placeholder="z. B. 0151 1234567">
+            <label for="lf-email">E-Mail-Adresse</label>
+            <input id="lf-email" name="email" type="email" autocomplete="email" inputmode="email" required placeholder="name@beispiel.de">
+            <label for="lf-phone">Telefon <span class="muted" style="font-weight:600">(optional, für Rückfragen)</span></label>
+            <input id="lf-phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" placeholder="z. B. 0151 1234567">
             <label for="lf-ort">Ort / Straße <span class="muted" style="font-weight:600">(optional)</span></label>
             <input id="lf-ort" name="ort" type="text" autocomplete="street-address" placeholder="z. B. Pech, Musterweg 3">
-            <button class="btn btn-primary btn-lg" type="submit">Rückruf & Festpreis anfordern</button>
-            <p class="privacy">Keine Werbung, keine Weitergabe. Ihre Daten nutze ich nur für die Rückmeldung. <a href="datenschutz.html">Datenschutz</a></p>
+            <label for="lf-msg">Noch etwas, das ich wissen sollte? <span class="muted" style="font-weight:600">(optional)</span></label>
+            <textarea id="lf-msg" name="message" rows="3" placeholder="z. B. Hecke ist sehr hoch, Zugang über die Garage"></textarea>
+            <button class="btn btn-primary btn-lg" type="submit">Angebot anfragen</button>
+            <p class="privacy">Keine Werbung, keine Weitergabe. Ihre Daten nutze ich nur für das Angebot. <a href="datenschutz.html">Datenschutz</a></p>
           </form>
+          <div class="or">oder</div>
+          <a class="btn btn-wa btn-lg" id="wa-result" href="#" target="_blank" rel="noopener">${waIcon()} Per WhatsApp senden</a>
         </div>
       </div>`;
     body.appendChild(s);
 
-    const text = summaryText(c);
+    const text = summaryText();
     el("#wa-result", s).href = `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(text)}`;
-    el("#wa-result", s).addEventListener("click", () => track("Lead", { channel: "whatsapp", type: state.type, value: c.total }));
+    el("#wa-result", s).addEventListener("click", () => track("Lead", { channel: "whatsapp", type: state.type }));
 
     const form = el("#lead-form", s);
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
-      const name = form.name.value.trim(), phone = form.phone.value.trim(), ort = form.ort.value.trim();
-      if (!name || phone.replace(/\D/g, "").length < 6) { form.querySelector(!name ? "#lf-name" : "#lf-phone").focus(); form.querySelector(!name ? "#lf-name" : "#lf-phone").style.borderColor = "#c0392b"; return; }
-      const payload = { subject: `Anfrage Landingpage: ${who}`, name, phone, ort, kostenvoranschlag: text, nr: no, page: location.href };
+      const name = form.name.value.trim(), email = form.email.value.trim(), phone = form.phone.value.trim(), ort = form.ort.value.trim(), message = form.message.value.trim();
+      const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email);
+      if (!name || !emailOk) { const f = form.querySelector(!name ? "#lf-name" : "#lf-email"); f.focus(); f.style.borderColor = "#c0392b"; return; }
+      const subject = `Anfrage Landingpage: ${lines[0][1]}`;
+      const payload = { subject, name, email, phone, ort, message, angaben: text, page: location.href };
       const btn = form.querySelector("button"); btn.disabled = true; btn.textContent = "Wird gesendet …";
       let ok = false;
       if (CONFIG.formEndpoint) {
@@ -323,11 +296,11 @@
       }
       if (!ok) {
         // Fallback ohne Backend: E-Mail-Programm mit allen Angaben öffnen
-        const mail = `mailto:${CONFIG.email}?subject=${encodeURIComponent(payload.subject)}&body=${encodeURIComponent(`${text}\n\nName: ${name}\nTelefon: ${phone}\nOrt: ${ort || "-"}\n${no}`)}`;
+        const mail = `mailto:${CONFIG.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(`${text}\n\nName: ${name}\nE-Mail: ${email}\nTelefon: ${phone || "-"}\nOrt: ${ort || "-"}\nHinweis: ${message || "-"}`)}`;
         window.location.href = mail;
       }
-      track("Lead", { channel: ok ? "form" : "mail", type: state.type, value: c.total });
-      el("#lead-box", s).innerHTML = `<div class="success"><div class="hand">Danke, ${name.split(" ")[0]}!</div><p>${ok ? "Ihre Anfrage ist bei mir angekommen. Ich melde mich innerhalb eines Werktags." : "Ihr E-Mail-Programm hat sich mit allen Angaben geöffnet. Einfach absenden, ich melde mich innerhalb eines Werktags."}</p><p style="margin-top:1rem"><a class="btn btn-outline" href="tel:+${CONFIG.whatsapp}">Oder direkt anrufen: ${CONFIG.phoneDisplay}</a></p></div>`;
+      track("Lead", { channel: ok ? "form" : "mail", type: state.type });
+      el("#lead-box", s).innerHTML = `<div class="success"><div class="hand">Danke, ${name.split(" ")[0]}!</div><p>${ok ? `Ihre Anfrage ist bei mir angekommen. Das Angebot kommt innerhalb eines Werktags an ${email}.` : "Ihr E-Mail-Programm hat sich mit allen Angaben geöffnet. Einfach absenden, das Angebot kommt innerhalb eines Werktags."}</p><p style="margin-top:1rem"><a class="btn btn-outline" href="tel:+${CONFIG.whatsapp}">Oder direkt anrufen: ${CONFIG.phoneDisplay}</a></p></div>`;
     });
 
     const back = document.createElement("button"); back.type = "button"; back.className = "link-btn"; back.textContent = "← Angaben ändern";
