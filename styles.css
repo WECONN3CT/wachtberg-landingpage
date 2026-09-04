@@ -317,6 +317,13 @@ h3 { font-size: 1.25rem; }
 .why-marco { display: flex; justify-content: flex-end; align-self: end; margin-bottom: calc(-1 * var(--sec-pad)); margin-right: clamp(-90px, calc((var(--max) - 100vw) / 2), 0px); }
 .why-marco img { width: min(100%, 560px); filter: drop-shadow(0 12px 24px rgba(0,0,0,.35)); }
 .section-dark { overflow: hidden; }
+/* Hintergrundvideo im "Warum"-Abschnitt: stark waldgruen abgedunkelt, damit Text und Figur lesbar bleiben */
+.why-section { isolation: isolate; }
+.why-bg { position: absolute; inset: 0; z-index: -1; overflow: hidden; background: var(--forest); }
+.why-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: saturate(.8) brightness(.7); opacity: 0; transition: opacity 1.2s ease; }
+.why-video.is-ready { opacity: 1; }
+.why-shade { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(12,24,17,.72) 0%, rgba(12,24,17,.58) 45%, rgba(12,24,17,.32) 100%); }
+@media (max-width: 860px) { .why-shade { background: linear-gradient(180deg, rgba(12,24,17,.74) 0%, rgba(12,24,17,.55) 60%, rgba(12,24,17,.45) 100%); } }
 @media (max-width: 860px) { .why { grid-template-columns: 1fr; gap: 2rem; } .why > .reveal:first-child { padding-bottom: 0; } .why-marco { justify-content: center; margin-right: 0; } .why-marco img { width: min(84%, 400px); } }
 
 /* ---------- FAQ ---------- */
@@ -343,7 +350,7 @@ footer { position: relative; overflow: hidden; background: #1A1A18; color: rgba(
 .foot-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 1.2rem 2rem; padding-bottom: 2.4rem; }
 .foot-head img { height: 64px; width: auto; }
 .foot-quote { font-family: var(--hand); font-size: clamp(1.4rem, 2vw, 1.8rem); line-height: 1.2; color: rgba(245,242,236,.88); max-width: 34ch; text-align: right; }
-.foot-grid { display: grid; grid-template-columns: auto auto minmax(0, 1.1fr) minmax(0, 1.3fr); gap: 2rem 3.4rem; }
+.foot-grid { display: grid; grid-template-columns: auto minmax(0, 1.1fr) minmax(0, 1.3fr); gap: 2rem 3.4rem; }
 .foot-eyebrow { font-size: .7rem; font-weight: 800; letter-spacing: .2em; text-transform: uppercase; color: var(--sand); margin-bottom: .95rem; }
 footer ul { list-style: none; display: grid; gap: .4rem; font-size: .88rem; line-height: 1.5; }
 footer a { color: rgba(245,242,236,.82); text-decoration: none; transition: color .15s; }
@@ -362,7 +369,7 @@ footer a:hover { color: var(--sand); }
 .foot-links { display: flex; gap: 1.3rem; }
 .foot-links a { color: rgba(245,242,236,.55); }
 .foot-links a:hover { color: #F5F2EC; }
-@media (max-width: 960px) { .foot-grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 960px) { .foot-grid { grid-template-columns: 1fr 1fr; } .foot-grid > :last-child { grid-column: 1 / -1; } }
 @media (max-width: 760px) {
   .foot-inner { padding-bottom: 6rem; }
   .foot-head { align-items: flex-start; }

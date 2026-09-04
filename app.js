@@ -357,3 +357,31 @@
   // Sicherheitsnetz: falls der Observer nicht feuert (Tab im Hintergrund, alte Browser), alles einblenden
   setTimeout(() => document.querySelectorAll(".reveal:not(.in)").forEach(n => n.classList.add("in")), 2500);
 })();
+
+
+// ---------- Hintergrundvideo "Warum"-Abschnitt ----------
+// Laedt das Video erst, wenn der Abschnitt in die Naehe scrollt; nicht bei Reduced Motion oder Datensparmodus.
+(function () {
+  const v = document.querySelector(".why-video");
+  if (!v) return;
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const save = navigator.connection && navigator.connection.saveData;
+  if (reduce || save) return;
+  const load = () => {
+    if (v.dataset.loaded) return;
+    v.dataset.loaded = "1";
+    [["video/webm", v.dataset.webm], ["video/mp4", v.dataset.mp4]].forEach(([type, src]) => {
+      if (!src) return;
+      const s = document.createElement("source"); s.type = type; s.src = src; v.appendChild(s);
+    });
+    v.addEventListener("canplay", () => { v.classList.add("is-ready"); v.play().catch(() => {}); }, { once: true });
+    v.addEventListener("error", () => v.remove(), { once: true });
+    v.load();
+  };
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e) => {
+      if (e.isIntersecting) { load(); v.play().catch(() => {}); } else if (v.dataset.loaded) { v.pause(); }
+    });
+  }, { rootMargin: "300px" });
+  io.observe(v);
+})();
