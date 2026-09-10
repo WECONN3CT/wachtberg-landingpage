@@ -187,6 +187,8 @@ h3 { font-size: 1.25rem; }
 .service h3 { margin-bottom: .35rem; }
 .service p { color: var(--muted); font-size: .98rem; }
 .service .tag { display: inline-block; margin-top: .7rem; font-size: .72rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: var(--leaf); background: var(--moss); padding: .2rem .6rem; border-radius: 999px; }
+.services-note { margin-top: 1.4rem; color: var(--muted); font-size: 1rem; max-width: 46rem; }
+.services-note b { color: var(--forest); }
 @media (max-width: 900px) { .services { grid-template-columns: 1fr 1fr; } }
 @media (max-width: 560px) { .services { grid-template-columns: 1fr; } }
 

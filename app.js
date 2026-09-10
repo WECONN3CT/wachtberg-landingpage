@@ -18,19 +18,21 @@
     jobs: {
       garten: { label: "Gartenpflege", sub: "Rasen, Beete, Sträucher, regelmäßig" },
       hecke: { label: "Heckenschnitt", sub: "Formschnitt, Rückschnitt, Entsorgung" },
-      laub: { label: "Laub & Rinnen", sub: "Herbstputz, Rinnen, Wege und Einfahrt" },
+      laub: { label: "Laubreinigung", sub: "Herbstputz, Wege und Einfahrt" },
       winter: { label: "Winterdienst", sub: "Räumen und streuen, Streugut inklusive" },
       tonnen: { label: "Tonnen-Service", sub: "Raus und rein an allen Abfuhrtagen" },
       reparatur: { label: "Kleinreparaturen", sub: "Montage und kleine Arbeiten am Haus" },
+      sonstiges: { label: "Weitere Tätigkeiten", sub: "Auf Anfrage. Kurz im Nachrichtenfeld beschreiben." },
     },
     tasks: {
       rasen: { label: "Rasen mähen & Kanten" },
       hecke: { label: "Heckenschnitt" },
-      laub: { label: "Laub, Rinnen & Herbstputz" },
+      laub: { label: "Laub & Herbstputz" },
       reparatur: { label: "Kleinreparaturen & Montage" },
       entruempelung: { label: "Entrümpelung & Transport" },
       urlaub: { label: "Bewässerung im Urlaub", note: "Während Sie weg sind" },
       winter: { label: "Winterdienst", note: "Einzeleinsatz oder ganze Saison" },
+      sonstiges: { label: "Weitere Tätigkeiten", note: "Auf Anfrage, kurz beschreiben" },
     },
   };
 
@@ -47,6 +49,7 @@
     truck: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6h11v10H2zM13 10h5l3 3v3h-8z"/><circle cx="6" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></svg>',
     drop: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3s6 7 6 11a6 6 0 01-12 0c0-4 6-11 6-11z"/></svg>',
     scissors: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M20 4L8.5 15.5M8.5 8.5L20 20"/></svg>',
+    more: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>',
     mower: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 15h10l3-6h4M13 15l-2 4"/><circle cx="7" cy="18" r="2.5"/><circle cx="18" cy="17" r="2"/><path d="M9 15V9h3"/></svg>',
   };
 
@@ -117,7 +120,7 @@
     const opts = [
       { key: "privat", icon: ICONS.home, title: "Haus mit Garten", sub: "Regelmäßige Betreuung, das ganze Jahr. Monatlich, ein Ansprechpartner." },
       { key: "zuruf", icon: ICONS.clock, title: "Ab und zu, auf Zuruf", sub: "Einzelne Aufgaben, stundenweise. Kein Vertrag, keine Laufzeit." },
-      { key: "mfh", icon: ICONS.building, title: "Hausverwaltung / WEG", sub: "Mehrfamilienhaus, laufende Betreuung mit Kontrollgang." },
+      { key: "mfh", icon: ICONS.building, title: "Hausverwaltung / WEG", sub: "Objekte jeder Art, laufende Betreuung mit Kontrollgang." },
     ];
     opts.forEach(o => grid.appendChild(choiceBtn({ ...o, on: state.type === o.key, onClick: () => { state.type = o.key; step = 2; render(); } })));
     s.appendChild(grid); body.appendChild(s);
@@ -130,7 +133,7 @@
     if (state.type === "privat") {
       s.innerHTML = `<h3>Was soll ich übernehmen?</h3><p class="hint">Mehrfachauswahl möglich. Was nicht dabei ist, schreiben Sie mir am Ende einfach dazu.</p>`;
       const grid = document.createElement("div"); grid.className = "choices cols-3";
-      const icons = { garten: ICONS.mower, hecke: ICONS.scissors, laub: ICONS.leaf, winter: ICONS.snow, tonnen: ICONS.bin, reparatur: ICONS.tool };
+      const icons = { garten: ICONS.mower, hecke: ICONS.scissors, laub: ICONS.leaf, winter: ICONS.snow, tonnen: ICONS.bin, reparatur: ICONS.tool, sonstiges: ICONS.more };
       Object.entries(P.jobs).forEach(([k, t]) => grid.appendChild(choiceBtn({
         key: k, icon: icons[k], title: t.label, sub: t.sub, multi: true, on: state.jobs.has(k),
         onClick: (e) => { const b = e.currentTarget; state.jobs.has(k) ? state.jobs.delete(k) : state.jobs.add(k); b.classList.toggle("on"); b.setAttribute("aria-pressed", b.classList.contains("on")); fwd.disabled = state.jobs.size === 0; },
@@ -140,7 +143,7 @@
     } else if (state.type === "zuruf") {
       s.innerHTML = `<h3>Was soll erledigt werden?</h3><p class="hint">Mehrfachauswahl möglich. Anfahrt und Werkzeug bringe ich mit.</p>`;
       const grid = document.createElement("div"); grid.className = "choices cols-2";
-      const icons = { rasen: ICONS.mower, hecke: ICONS.scissors, laub: ICONS.leaf, reparatur: ICONS.tool, entruempelung: ICONS.truck, urlaub: ICONS.drop, winter: ICONS.snow };
+      const icons = { rasen: ICONS.mower, hecke: ICONS.scissors, laub: ICONS.leaf, reparatur: ICONS.tool, entruempelung: ICONS.truck, urlaub: ICONS.drop, winter: ICONS.snow, sonstiges: ICONS.more };
       Object.entries(P.tasks).forEach(([k, t]) => {
         grid.appendChild(choiceBtn({
           key: k, icon: icons[k], title: t.label, sub: t.note || "", multi: true, on: state.tasks.has(k),
@@ -197,6 +200,7 @@
         { key: "garten", icon: ICONS.mower, title: "Gartenpflege", sub: "Rasen, Hecken, Beete, Laub in festem Rhythmus" },
         { key: "treppe", icon: ICONS.stairs, title: "Treppenhausreinigung", sub: `${state.floors} Etagen, wöchentlich` },
         { key: "winter", icon: ICONS.snow, title: "Winterdienst", sub: "Saison November bis März, Räumpflicht übernommen" },
+        { key: "sonstiges", icon: ICONS.more, title: "Weitere Tätigkeiten", sub: "Auf Anfrage, kurz im Nachrichtenfeld beschreiben" },
       ];
       mods.forEach(m => grid.appendChild(choiceBtn({
         ...m, multi: true, on: state.mfhModules.has(m.key),
@@ -222,15 +226,15 @@
     const L = [];
     if (state.type === "privat") {
       L.push(["Objekt", `Haus mit Garten, ${state.sqm >= 2000 ? "über 2.000" : "ca. " + state.sqm.toLocaleString("de-DE")} m² Grundstück`]);
-      L.push(["Gewünscht", [...state.jobs].map(k => P.jobs[k].label).join(", ")]);
+      L.push(["Gewünscht", [...state.jobs].map(k => k === "sonstiges" ? "Weitere Tätigkeiten auf Anfrage" : P.jobs[k].label).join(", ")]);
       if (state.season) L.push(["Start", state.season]);
     } else if (state.type === "zuruf") {
       L.push(["Objekt", "Einzelne Aufgaben auf Zuruf"]);
-      L.push(["Aufgaben", [...state.tasks].map(k => P.tasks[k].label).join(", ")]);
+      L.push(["Aufgaben", [...state.tasks].map(k => k === "sonstiges" ? "Weitere Tätigkeiten auf Anfrage" : P.tasks[k].label).join(", ")]);
       if (state.timing) L.push(["Zeitpunkt", state.timing]);
     } else {
-      L.push(["Objekt", `Mehrfamilienhaus, ${state.units} Wohneinheiten, ${state.floors} Etagen`]);
-      const mods = ["Grundbetreuung"]; if (state.mfhModules.has("garten")) mods.push("Gartenpflege"); if (state.mfhModules.has("treppe")) mods.push("Treppenhausreinigung"); if (state.mfhModules.has("winter")) mods.push("Winterdienst");
+      L.push(["Objekt", `Verwaltetes Objekt, ${state.units} Wohneinheiten, ${state.floors} Etagen`]);
+      const mods = ["Grundbetreuung"]; if (state.mfhModules.has("garten")) mods.push("Gartenpflege"); if (state.mfhModules.has("treppe")) mods.push("Treppenhausreinigung"); if (state.mfhModules.has("winter")) mods.push("Winterdienst"); if (state.mfhModules.has("sonstiges")) mods.push("Weitere Tätigkeiten auf Anfrage");
       L.push(["Module", mods.join(", ")]);
     }
     return L;
@@ -245,6 +249,7 @@
   function stepContact() {
     const s = document.createElement("div"); s.className = "step";
     const lines = summaryLines();
+    const wantsMore = state.jobs.has("sonstiges") || state.tasks.has("sonstiges") || state.mfhModules.has("sonstiges");
     const rows = lines.map(([k, v]) => `<tr><td><small>${k}</small>${v}</td></tr>`).join("");
     s.innerHTML = `
       <h3>Fast geschafft. Wohin darf ich das Angebot schicken?</h3>
@@ -266,8 +271,8 @@
             <input id="lf-phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" placeholder="z. B. 0151 1234567">
             <label for="lf-ort">Ort / Straße <span class="muted" style="font-weight:600">(optional)</span></label>
             <input id="lf-ort" name="ort" type="text" autocomplete="street-address" placeholder="z. B. Pech, Musterweg 3">
-            <label for="lf-msg">Noch etwas, das ich wissen sollte? <span class="muted" style="font-weight:600">(optional)</span></label>
-            <textarea id="lf-msg" name="message" rows="3" placeholder="z. B. Hecke ist sehr hoch, Zugang über die Garage"></textarea>
+            <label for="lf-msg">${wantsMore ? "Welche weiteren Tätigkeiten wünschen Sie?" : "Noch etwas, das ich wissen sollte?"} <span class="muted" style="font-weight:600">(optional)</span></label>
+            <textarea id="lf-msg" name="message" rows="3" placeholder="${wantsMore ? "z. B. Zaun streichen, Terrasse reinigen, Carport aufräumen" : "z. B. Hecke ist sehr hoch, Zugang über die Garage"}"></textarea>
             <button class="btn btn-primary btn-lg" type="submit">Angebot anfragen</button>
             <p class="privacy">Keine Werbung, keine Weitergabe. Ihre Daten nutze ich nur für das Angebot. <a href="datenschutz.html">Datenschutz</a></p>
           </form>
