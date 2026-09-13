@@ -127,7 +127,7 @@ export async function onRequestPost(context) {
     const confirmText = [
       `Hallo ${first},`,
       "",
-      "vielen Dank für Ihre Anfrage. Ich schaue mir Ihre Angaben an und melde mich innerhalb eines Werktags mit einem Angebot.",
+      "vielen Dank für Ihre Anfrage. Ich schaue mir Ihre Angaben an und melde mich so schnell wie möglich mit einem Angebot.",
       "",
       "Ihre Angaben:",
       angaben || "–",
