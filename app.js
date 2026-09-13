@@ -207,7 +207,10 @@
         ...m, multi: true, on: state.mfhModules.has(m.key),
         onClick: (e) => { const b = e.currentTarget; state.mfhModules.has(m.key) ? state.mfhModules.delete(m.key) : state.mfhModules.add(m.key); b.classList.toggle("on"); b.setAttribute("aria-pressed", b.classList.contains("on")); },
       })));
-      s.appendChild(grid); body.appendChild(s);
+      s.appendChild(grid);
+      s.insertAdjacentHTML("beforeend", `<h3 style="margin-top:1.6rem">Wann soll die Betreuung starten?</h3><p class="hint">Damit ich die Planung darauf abstimmen kann.</p>`);
+      s.appendChild(chips(["Sofort", "Nächster Monat", "Frühjahr", "Herbst", "Winter"], "season"));
+      body.appendChild(s);
       navButtons({ backTo: 2, next: () => { step = 4; render(); }, nextLabel: "Weiter zu den Kontaktdaten" });
     }
   }
@@ -228,15 +231,16 @@
     if (state.type === "privat") {
       L.push(["Objekt", `Haus mit Garten, ${state.sqm >= 2000 ? "über 2.000" : "ca. " + state.sqm.toLocaleString("de-DE")} m² Grundstück`]);
       L.push(["Gewünscht", [...state.jobs].map(k => k === "sonstiges" ? "Weitere Tätigkeiten auf Anfrage" : P.jobs[k].label).join(", ")]);
-      if (state.season) L.push(["Start", state.season]);
+      L.push(["Start", state.season || "keine Angabe"]);
     } else if (state.type === "zuruf") {
       L.push(["Objekt", "Einzelne Aufgaben auf Zuruf"]);
       L.push(["Aufgaben", [...state.tasks].map(k => k === "sonstiges" ? "Weitere Tätigkeiten auf Anfrage" : P.tasks[k].label).join(", ")]);
-      if (state.timing) L.push(["Zeitpunkt", state.timing]);
+      L.push(["Zeitpunkt", state.timing || "keine Angabe"]);
     } else {
       L.push(["Objekt", `Verwaltetes Objekt, ${state.units} Wohneinheiten, ${state.floors} Etagen`]);
       const mods = ["Grundbetreuung"]; if (state.mfhModules.has("garten")) mods.push("Gartenpflege"); if (state.mfhModules.has("treppe")) mods.push("Treppenhausreinigung"); if (state.mfhModules.has("winter")) mods.push("Winterdienst"); if (state.mfhModules.has("sonstiges")) mods.push("Weitere Tätigkeiten auf Anfrage");
       L.push(["Module", mods.join(", ")]);
+      L.push(["Start", state.season || "keine Angabe"]);
     }
     return L;
   }
