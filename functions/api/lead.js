@@ -26,6 +26,25 @@ const esc = (s) => s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">
 const json = (body, status = 200) =>
   new Response(JSON.stringify(body), { status, headers: { "Content-Type": "application/json; charset=utf-8" } });
 
+/** Bestätigungsmail an den Kunden als HTML: Absätze, Angaben-Box, Signatur. */
+function confirmHtml({ first, intro, rows, phone }) {
+  const p = (t) => `<p style="margin:0 0 14px">${t}</p>`;
+  const box = rows.length
+    ? `<table cellpadding="0" cellspacing="0" style="margin:18px 0;background:#f4f1e8;border-radius:10px;width:100%"><tr><td style="padding:14px 16px">
+        <div style="font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#6b7a6e;margin-bottom:8px">Ihre Angaben</div>
+        ${rows.map(([k, v]) => `<div style="margin:0 0 6px"><span style="color:#6b7a6e">${esc(k)}:</span> ${esc(v).replace(/\n/g, "<br>")}</div>`).join("")}
+      </td></tr></table>`
+    : "";
+  return `
+    <div style="font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.6;color:#222;max-width:600px;padding:8px 0">
+      ${p(`Hallo ${esc(first)},`)}
+      ${p(esc(intro))}
+      ${box}
+      ${p(`Bei Rückfragen erreichen Sie mich unter <a href="tel:${phone.replace(/\s+/g, "")}" style="color:#2f5d3a">${esc(phone)}</a> oder einfach per Antwort auf diese E-Mail.`)}
+      <p style="margin:22px 0 0">Viele Grüße<br><b>Marco Erlenbach</b><br><span style="color:#6b7a6e">RundUmWachtberg Hausmeisterservice</span></p>
+    </div>`;
+}
+
 async function sendMail(env, msg) {
   const res = await fetch("https://api.resend.com/emails", {
     method: "POST",
@@ -124,25 +143,33 @@ export async function onRequestPost(context) {
 
   if (env.MAIL_CONFIRM !== "0") {
     const first = name.split(/\s+/)[0];
+    const intro = "vielen Dank für Ihre Anfrage. Ich schaue mir Ihre Angaben an und melde mich in der Regel innerhalb eines Werktags mit einem Angebot, sonst so schnell wie möglich.";
+    const phoneDisplay = "+49 151 72443749";
+    // Angaben aus dem Wizard ("• Objekt: …") in Zeilen zerlegen, plus optionale Felder
+    const confirmRows = angaben.split("\n").map((l) => l.replace(/^[•\-\s]+/, "")).filter(Boolean).map((l) => {
+      const i = l.indexOf(":"); return i > 0 ? [l.slice(0, i).trim(), l.slice(i + 1).trim()] : ["Angabe", l];
+    });
+    if (ort) confirmRows.push(["Ort / Straße", ort]);
+    if (message) confirmRows.push(["Hinweis", message]);
     const confirmText = [
       `Hallo ${first},`,
       "",
-      "vielen Dank für Ihre Anfrage. Ich schaue mir Ihre Angaben an und melde mich in der Regel innerhalb eines Werktags mit einem Angebot, sonst so schnell wie möglich.",
+      intro,
       "",
-      "Ihre Angaben:",
-      angaben || "–",
-      ort ? `Ort / Straße: ${ort}` : "",
-      message ? `Hinweis: ${message}` : "",
-      "",
-      "Bei Rückfragen erreichen Sie mich unter +49 151 72443749 oder per Antwort auf diese E-Mail.",
+      confirmRows.length ? "Ihre Angaben:" : null,
+      ...confirmRows.map(([k, v]) => `${k}: ${v}`),
+      confirmRows.length ? "" : null,
+      `Bei Rückfragen erreichen Sie mich unter ${phoneDisplay} oder einfach per Antwort auf diese E-Mail.`,
       "",
       "Viele Grüße",
       "Marco Erlenbach",
       "RundUmWachtberg Hausmeisterservice",
-    ].filter((l) => l !== "").join("\n");
+    ].filter((l) => l !== null).join("\n");
     tasks.push(
-      sendMail(env, { from, to: [email], reply_to: to, subject: "Ihre Anfrage bei RundUmWachtberg", text: confirmText })
-        .catch((err) => console.error("Bestätigung fehlgeschlagen:", err.message))
+      sendMail(env, {
+        from, to: [email], reply_to: to, subject: "Ihre Anfrage bei RundUmWachtberg",
+        text: confirmText, html: confirmHtml({ first, intro, rows: confirmRows, phone: phoneDisplay }),
+      }).catch((err) => console.error("Bestätigung fehlgeschlagen:", err.message))
     );
   }
 
