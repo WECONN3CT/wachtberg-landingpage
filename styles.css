@@ -487,3 +487,6 @@ footer a:hover { color: var(--sand); }
 .slider input[type="range"]::-moz-range-thumb { width: 24px; height: 24px; border-radius: 50%; background: #fff; border: 3px solid var(--forest); box-shadow: 0 2px 8px rgba(28,58,42,.3); }
 .slider input[type="range"]:focus-visible { outline: 3px solid rgba(61,122,82,.35); outline-offset: 4px; border-radius: 999px; }
 .slider-scale { display: flex; justify-content: space-between; font-size: .78rem; font-weight: 800; color: var(--muted); margin-top: .2rem; }
+
+/* Honeypot-Feld gegen Spam-Bots, für Menschen unsichtbar */
+.hp{position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden}

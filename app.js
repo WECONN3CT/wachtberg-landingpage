@@ -10,8 +10,9 @@
     whatsapp: "4915172443749",           // Nummer vom Flyer, ohne + und Leerzeichen
     phoneDisplay: "+49 151 72443749",
     email: "info@rundumwachtberg.de",
-    // Formular-Endpoint (z. B. Web3Forms/Formspree/Cloudflare Worker). Leer = Fallback per E-Mail-Programm.
-    formEndpoint: "",
+    // Formular-Endpoint: Cloudflare Pages Function (functions/api/lead.js, Versand per Resend).
+    // Leer = Fallback per E-Mail-Programm des Besuchers.
+    formEndpoint: "/api/lead",
   };
 
   const P = {
@@ -263,6 +264,7 @@
         <div class="lead-box" id="lead-box">
           <h4>Angebot per E-Mail erhalten</h4>
           <form id="lead-form" novalidate>
+            <div class="hp" aria-hidden="true"><label for="lf-company">Firma</label><input id="lf-company" name="company" type="text" tabindex="-1" autocomplete="off"></div>
             <label for="lf-name">Ihr Name</label>
             <input id="lf-name" name="name" type="text" autocomplete="name" required placeholder="Vor- und Nachname">
             <label for="lf-email">E-Mail-Adresse</label>
@@ -293,7 +295,7 @@
       const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email);
       if (!name || !emailOk) { const f = form.querySelector(!name ? "#lf-name" : "#lf-email"); f.focus(); f.style.borderColor = "#c0392b"; return; }
       const subject = `Anfrage Landingpage: ${lines[0][1]}`;
-      const payload = { subject, name, email, phone, ort, message, angaben: text, page: location.href };
+      const payload = { subject, name, email, phone, ort, message, company: form.company.value, angaben: text, page: location.href };
       const btn = form.querySelector("button"); btn.disabled = true; btn.textContent = "Wird gesendet …";
       let ok = false;
       if (CONFIG.formEndpoint) {
