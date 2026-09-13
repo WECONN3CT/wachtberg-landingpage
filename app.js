@@ -7,8 +7,8 @@
 
   // ---------- Konfiguration ----------
   const CONFIG = {
-    whatsapp: "4915172443749",           // Nummer vom Flyer, ohne + und Leerzeichen
-    phoneDisplay: "+49 151 72443749",
+    whatsapp: "491717491302",           // Nummer vom Flyer, ohne + und Leerzeichen
+    phoneDisplay: "+49 171 7491302",
     email: "info@rundumwachtberg.de",
     // Formular-Endpoint: Cloudflare Pages Function (functions/api/lead.js, Versand per Resend).
     // Leer = Fallback per E-Mail-Programm des Besuchers.
@@ -330,7 +330,7 @@
 
   // WhatsApp-Links auf der Seite mit Standardtext füllen
   document.querySelectorAll("a[data-wa]").forEach(a => {
-    a.href = `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(a.dataset.wa || "Hallo Marco, ich komme über Ihren Flyer und hätte gern ein Angebot für ")}`;
+    a.href = `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(a.dataset.wa || "Hallo Marco, ich hätte gern ein Angebot für ")}`;
     a.addEventListener("click", () => track("Contact", { channel: "whatsapp" }));
   });
   document.querySelectorAll('a[href^="tel:"]').forEach(a => a.addEventListener("click", () => track("Contact", { channel: "phone" })));

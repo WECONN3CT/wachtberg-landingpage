@@ -144,7 +144,7 @@ export async function onRequestPost(context) {
   if (env.MAIL_CONFIRM !== "0") {
     const first = name.split(/\s+/)[0];
     const intro = "vielen Dank für Ihre Anfrage. Ich schaue mir Ihre Angaben an und melde mich in der Regel innerhalb eines Werktags mit einem Angebot, sonst so schnell wie möglich.";
-    const phoneDisplay = "+49 151 72443749";
+    const phoneDisplay = "+49 171 7491302";
     // Angaben aus dem Wizard ("• Objekt: …") in Zeilen zerlegen, plus optionale Felder
     const confirmRows = angaben.split("\n").map((l) => l.replace(/^[•\-\s]+/, "")).filter(Boolean).map((l) => {
       const i = l.indexOf(":"); return i > 0 ? [l.slice(0, i).trim(), l.slice(i + 1).trim()] : ["Angabe", l];

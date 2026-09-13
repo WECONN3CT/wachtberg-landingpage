@@ -12,7 +12,7 @@ Gehostet über Cloudflare Pages (Projekt `rundumwachtberg-landingpage`, Konto WE
 - `assets/` – Freisteller aus dem Flyer, Logo, OG-Bild, Blatt-Skizzen
 
 ## Konfiguration (`app.js`, Block `CONFIG`)
-- `whatsapp` – WhatsApp-Nummer ohne `+` (aktuell die Nummer vom Flyer)
+- `whatsapp` – WhatsApp-Nummer ohne `+` (Marco Erlenbach, +49 171 7491302)
 - `formEndpoint` – POST-Endpoint für das Formular, Standard `/api/lead` (Pages Function).
   Leer oder Fehler beim Senden = Fallback: Das E-Mail-Programm des Besuchers öffnet sich mit allen Angaben.
 - Auswahltexte im Block `P` anpassen, wenn sich Leistungen ändern.
