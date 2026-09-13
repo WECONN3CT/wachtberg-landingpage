@@ -190,7 +190,7 @@
       body.appendChild(s);
       navButtons({ backTo: 2, next: () => { step = 4; render(); }, nextLabel: "Weiter zu den Kontaktdaten" });
     } else if (state.type === "zuruf") {
-      s.innerHTML = `<h3>Wann soll ich kommen?</h3><p class="hint">Termine nach Absprache, oft auch kurzfristig. Rückmeldung innerhalb eines Werktags.</p>`;
+      s.innerHTML = `<h3>Wann soll ich kommen?</h3><p class="hint">Termine nach Absprache, oft auch kurzfristig. Rückmeldung in der Regel innerhalb eines Werktags.</p>`;
       s.appendChild(chips(["So bald wie möglich", "In den nächsten Wochen", "Frühjahr", "Herbst", "Winter"], "timing"));
       body.appendChild(s);
       navButtons({ backTo: 2, next: () => { step = 4; render(); }, nextLabel: "Weiter zu den Kontaktdaten" });
@@ -258,7 +258,7 @@
     const rows = lines.map(([k, v]) => `<tr><td><small>${k}</small>${v}</td></tr>`).join("");
     s.innerHTML = `
       <h3>Fast geschafft. Wohin darf ich das Angebot schicken?</h3>
-      <p class="hint">Ich schaue mir Ihre Angaben an und melde mich innerhalb eines Werktags mit einem Angebot, das zu Ihrem Grundstück passt.</p>
+      <p class="hint">Ich schaue mir Ihre Angaben an und melde mich in der Regel innerhalb eines Werktags mit einem Angebot, das zu Ihrem Grundstück passt.</p>
       <div class="result-grid">
         <div class="estimate summary">
           <div class="estimate-head"><div><b>Ihre Angaben</b><small>Über „Angaben ändern“ jederzeit anpassbar</small></div></div>
@@ -311,7 +311,7 @@
         window.location.href = mail;
       }
       track("Lead", { channel: ok ? "form" : "mail", type: state.type });
-      el("#lead-box", s).innerHTML = `<div class="success"><div class="hand">Danke, ${name.split(" ")[0]}!</div><p>${ok ? `Ihre Anfrage ist bei mir angekommen. Das Angebot kommt innerhalb eines Werktags an ${email}.` : "Ihr E-Mail-Programm hat sich mit allen Angaben geöffnet. Einfach absenden, das Angebot kommt innerhalb eines Werktags."}</p><p style="margin-top:1rem"><a class="btn btn-outline" href="tel:+${CONFIG.whatsapp}">Oder direkt anrufen: ${CONFIG.phoneDisplay}</a></p></div>`;
+      el("#lead-box", s).innerHTML = `<div class="success"><div class="hand">Danke, ${name.split(" ")[0]}!</div><p>${ok ? `Ihre Anfrage ist bei mir angekommen. Das Angebot kommt in der Regel innerhalb eines Werktags an ${email}.` : "Ihr E-Mail-Programm hat sich mit allen Angaben geöffnet. Einfach absenden, das Angebot kommt in der Regel innerhalb eines Werktags."}</p><p style="margin-top:1rem"><a class="btn btn-outline" href="tel:+${CONFIG.whatsapp}">Oder direkt anrufen: ${CONFIG.phoneDisplay}</a></p></div>`;
     });
 
     const back = document.createElement("button"); back.type = "button"; back.className = "link-btn"; back.textContent = "← Angaben ändern";
